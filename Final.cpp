@@ -1,6 +1,13 @@
 #include <bits/stdc++.h>
+#include <iostream>
+#include <conio.h>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <numeric>
+#include <chrono>
 using namespace std;
-
+using namespace chrono;
 queue<int> waitingQueue;      // Queue for task that has completed execution .
 queue<int> computedTaskQueue; // Queue for the task that has completed execution.
 // vector<int>CF;
@@ -147,12 +154,11 @@ vector<int> ETR1;
 
 void citizenfogmanager(vector<pair<int, vector<int>>> &UT, vector<int> RR, vector<int> PR, vector<int> BR, vector<int> ETR)
 {
-    while (UT.size() != 0)
+    // while (UT.size() != 0)
+    for (int ss = UT.size() - 1; ss >= 0; ss--)
     {
-        int ss = UT.size() - 1;
         int task = UT[ss].first;
-        UT.pop_back();
-        if (RR[ss] < 250 && PR[ss] < 50 && BR[ss] < 50)
+        if (RR[ss] < 200 || PR[ss] < 50 && BR[ss] < 50)
         {
             taskexexuteinCF.push_back(task);
         }
@@ -167,7 +173,7 @@ void citizenfogmanager(vector<pair<int, vector<int>>> &UT, vector<int> RR, vecto
     }
 }
 
-/************************  Merge Function according to Comparative Attribute Algorithm  ****************************/
+/************************  Merge Function according to Linear Attributes Summarized Algorithm(LASA)  ****************************/
 void merge1(vector<pair<int, vector<int>>> &UF, int l, int mid, int r, vector<int> ETR1, vector<int> RR1, vector<int> PR1, vector<int> BR1, int METR, int MRR, int MPR, int MBR)
 {
     vector<pair<int, vector<int>>> UF1, UF2;
@@ -175,7 +181,9 @@ void merge1(vector<pair<int, vector<int>>> &UF, int l, int mid, int r, vector<in
         UF1.push_back(UF[i]);
     for (int i = mid + 1; i <= r; i++)
         UF2.push_back(UF[i]);
+
     int i = l, l1 = 0, l2 = 0, r1 = UF1.size(), r2 = UF2.size();
+
     while (l1 < r1 && l2 < r2)
     {
         pair<int, vector<int>> FogA = UF1[l1], FogB = UF2[l2], F;
@@ -184,8 +192,9 @@ void merge1(vector<pair<int, vector<int>>> &UF, int l, int mid, int r, vector<in
         int RRa = RR1[a] / MRR, RRb = RR1[b] / MRR;
         int PRa = PR1[a] / MPR, PRb = PR1[b] / MPR;
         int BRa = BR1[a] / MBR, BRb = BR1[b] / MBR;
-        int PointA = 1 / ETRa + PRa + RRa + BRa;
-        int PointB = 1 / ETRb + PRb + RRb + BRb;
+        double PointA = 1.0 / ETRa + PRa + RRa + BRa; // Use double to avoid integer division truncation
+        double PointB = 1.0 / ETRb + PRb + RRb + BRb;
+
         if (PointA > PointB)
         {
             F = FogA;
@@ -213,6 +222,7 @@ void merge1(vector<pair<int, vector<int>>> &UF, int l, int mid, int r, vector<in
         UF[i] = F;
         i++;
     }
+
     while (l1 < r1)
     {
         UF[i] = UF1[l1++];
@@ -224,6 +234,7 @@ void merge1(vector<pair<int, vector<int>>> &UF, int l, int mid, int r, vector<in
         i++;
     }
 }
+
 /******************   Merge1 Sort  ******************/
 void mergesort1(vector<pair<int, vector<int>>> &UF, int l, int r, vector<int> ETR1, vector<int> RR1, vector<int> PR1, vector<int> BR1, int METR, int MRR, int MPR, int MBR)
 {
@@ -270,6 +281,7 @@ void MasterFogManager(queue<int> &ITQ, vector<int> ComputableCF)
 
 int main()
 {
+
     srand(time(0));
     // cout << "Jaj Shree Ram\n";
     cout << "Enter the number of tasks\n";
@@ -280,6 +292,7 @@ int main()
     int no_ofedges = rand() % ((n * (n - 1)));
     // cout<<"Number of edges is "<<no_ofedges<<endl;
     int cnt = 0;
+    cout << "\nConnected edges\n";
     for (int i = 0; i < no_ofedges; i++)
     {
         int x = rand() % n;
@@ -290,6 +303,7 @@ int main()
             if (find(adj[x].begin(), adj[x].end(), y) == adj[x].end())
             {
                 adj[x].push_back(y);
+                // cout << x << " ->" << y << endl;
                 cnt++;
             }
         }
@@ -311,28 +325,35 @@ int main()
     int no_of_r = 5;
     // cout << "Enter maximum number of request\n";
     // cin >> no_of_r;
+    cout << "Number of requests are\n";
     for (int i = 0; i < n; i++)
     {
         noofrequests[i] = (rand() % no_of_r) + 1; // i added 1 because if we divide any number by 0 then it gives infinite value
                                                   // request is from 1 to 10
+        cout << noofrequests[i] << " ";
     }
 
     // int work_l = 10;                     // workload is from 1 to work_l
     int work_l = 1024;
     // cout << "Enter workload from 4 to 1024   (it is in KB) \n";
     // cin >> work_l;
+    cout << "\nWorkload\n";
     for (int i = 0; i < n; i++)
     {
         workload[i] = (rand() % work_l) + 1; // i added 1 because if we divide any number by 0 then it gives infinite value
+        cout << workload[i] << " ";
     }
 
     int MNR = *min_element(noofrequests.begin(), noofrequests.end()); // minimum no. of request
-
+    cout << "\nMinimum number of request " << MNR;
     int WM = *min_element(workload.begin(), workload.end()); // minimum workload
-
+    cout << "\n Minimum workload " << WM << endl;
     cout << "************************ Before Comparative Attribute Algorithm(CAA) ******************************\n";
     printgraphVP(UT);
     cout << endl;
+
+    // Start the timer
+    auto startTime = high_resolution_clock::now();
 
     /*********************Camparative attribute Algorithm ****************************/
 
@@ -351,36 +372,44 @@ int main()
     int A = 250;
     // cout << "Enter the Execution time highest range\n";
     // cin >> A;
+    cout << "\nExecution time ratio\n";
     for (int i = 0; i < n; i++)
     {
         ETR[i] = (rand() % A) + 1;
+        cout << ETR[i] << " ";
     }
     // cout << endl;
     /******************************************/
     int B = 512;
     // cout << "Enter the RAM ratio\n";
     // cin >> B;
+    cout << "\nRam ratio\n";
     for (int i = 0; i < n; i++)
     {
         RR[i] = (rand() % B) + 1;
+        cout << RR[i] << " ";
     }
     // cout << endl;
     /******************************************/
     int C = 99;
     // cout << "Enter the Processor Ratio\n";
     // cin >> C;
+    cout << "\nProcessor Ratio\n";
     for (int i = 0; i < n; i++)
     {
         PR[i] = (rand() % C) + 1;
+        cout << PR[i] << " ";
     }
     // cout << endl;
     /******************************************/
     int D = 100;
     // cout << "Enter the Bandwidth Ratio\n";
     // cin >> D;
+    cout << "\nBandwidth Ratio\n";
     for (int i = 0; i < n; i++)
     {
         BR[i] = (rand() % D) + 1;
+        cout << BR[i] << " ";
     }
     cout << endl;
 
@@ -391,6 +420,16 @@ int main()
     int MRR = *min_element(RR1.begin(), RR1.end());
     int MPR = *min_element(PR1.begin(), PR1.end());
     int MBR = *min_element(BR1.begin(), BR1.end());
+
+    // Stop the timer
+    auto endTime = high_resolution_clock::now();
+    auto duration = duration_cast<milliseconds>(endTime - startTime);
+
+    // Output the elapsed time
+    // cout << "\nExecution Time: For CF " << duration.count() << " minutes" << endl;
+
+    // Start the timer
+    auto startTime1 = high_resolution_clock::now();
 
     cout << "********** Before Linear Attributes Summarized Algorithm(LASA) ************\n";
     printgraphVP(UF);
@@ -413,7 +452,7 @@ int main()
         cout << p.first << " ";
         ITQ.push(p.first);
     }
-
+    // cout<<"\nPE BW PS RAM\n";
     for (int i = 0; i < n; i++) //  CF status table under MF {RAM,PE,BW,PS}
     {
         vector<int> vv;
@@ -428,6 +467,8 @@ int main()
         vv.push_back(BW);
         vv.push_back(PS);
         vv.push_back(R);
+        // cout << endl<< i << " " << RAM << " " << PE << " " << BW << " " <<PS;
+
         CFStatusTable.push_back(vv);
     }
 
@@ -445,6 +486,13 @@ int main()
 
     MasterFogManager(ITQ, ComputableCF);
 
+    // Stop the timer
+    auto endTime1 = high_resolution_clock::now();
+    auto duration1 = duration_cast<milliseconds>(endTime1 - startTime1);
+
+    // Output the elapsed time
+    cout << "\nExecution Time: For MF " << duration1.count() << " minutes" << endl;
+
     cout << endl;
     for (auto p : result)
     {
@@ -456,34 +504,55 @@ int main()
     }
 
     cout << endl;
-    cout << "Task are executed by citizen fog\n";
+    cout << "Task Are executed by citizen fog " << taskexexuteinCF.size() << endl;
 
     for (auto p : taskexexuteinCF)
     {
         cout << p << " ";
     }
-    cout<<endl;
+    cout << endl;
 
-    cout<<"Task are executed by master fog\n";
-    for(auto p:result)
-      {
-        cout<<p.first<<" ";
-      }
-      vector<int>vp;
-      for(auto p:taskexexuteinCF)
-        {
-             vp.push_back(p);
-        }
-         for(auto p:result)
-          {
-            vp.push_back(p.first);
-          }
-          sort(vp.begin(),vp.end());
-          cout<<endl;
-    cout<<"Task that are not executed by citizen and master fog\n";
-    for(int i=0;i<n;i++)
-     {
-        if(find(vp.begin(),vp.end(),i)==vp.end())
-        cout<<i<<" ";
-     }
+    cout << "Task are executed by master fog " << result.size() << endl;
+    for (auto p : result)
+    {
+        cout << p.first << " ";
+    }
+    vector<int> vp;
+    for (auto p : taskexexuteinCF)
+    {
+        vp.push_back(p);
+    }
+    for (auto p : result)
+    {
+        vp.push_back(p.first);
+    }
+    sort(vp.begin(), vp.end());
+    cout << endl;
+
+    cout << "Task that go to cloud for execution " << n - taskexexuteinCF.size() - result.size() << endl;
+    for (int i = 0; i < n; i++)
+    {
+        if (find(vp.begin(), vp.end(), i) == vp.end())
+            cout << i << " ";
+    }
+    cout << "\nExecution Time: For CF " << duration.count() << " miliseconds" << endl;
+    cout << "Execution Time: For MF " << duration1.count() << " miliseconds" << endl;
+
+    int temp1 = (taskexexuteinCF.size() + result.size());
+    float temp2 = temp1 * 100.0;
+    int dependencyOnC = (100-temp2 / n);
+    cout << "depecdency on cloud reduced by " << dependencyOnC << " %" << endl;
+    int Etime = (duration.count() + duration1.count());
+    int Etime1 = Etime / temp1;
+    int timedependOnC = (Etime1 * (n - temp1) * 100) / Etime;
+    cout << "Execution Time decrease by " << 100 - timedependOnC << " %" << endl;
+
+    fstream obj;
+    obj.open("t1.txt", ios::app);
+    // obj<<"Total Number of tasks  Task Executed by CF Task Executed by MF Dependency on Cloud Execution time decrease on Cloud By"<<endl;
+
+    obj << n << "                     " << taskexexuteinCF.size() << "                       " << result.size() << "                       " << dependencyOnC << " %"
+        << "                                 " <<timedependOnC<< " %" << endl;
+
+    getch();
 }
